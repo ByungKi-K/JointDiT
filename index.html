@@ -139,13 +139,201 @@
     <div class="video-container" style="text-align: center;">
       <h2 class="title is-2" style="margin-bottom: 1rem;">JointDiT's Features</h2>
       <video autoplay muted loop playsinline
-             style="width: 100%; max-width: 1000px; height: auto; border: 3px solid #888; border-radius: 2px;">
+             style="width: 100%; max-width: 1000px; height: auto; border: 1px solid #888; border-radius: 2px;">
         <source src="./sources/JointDiT_video3.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
     </div>
   </div>
 </section>
+
+
+
+<!-- Load BeerSlider styles and scripts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beerslider/dist/BeerSlider.css">
+<script src="https://cdn.jsdelivr.net/npm/beerslider/dist/BeerSliderjs"></script>
+
+<section class="section" style="background-color: #f6f6f6;">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-2">Interactive Demo</h2>
+    <h3 class="title is-4 has-text-grey">Depth Estimation Results</h3>
+
+    <div id="slider-carousel">
+      <!-- Slide 1 -->
+      <div class="carousel-slide active columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample1_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample1_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample2_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample2_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample3_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample3_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample4_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample4_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample5_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample5_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample6_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample6_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample7_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample7_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample8_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample8_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample9_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample9_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample10_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample10_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample11_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample11_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample12_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample12_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons is-centered mt-4">
+      <button class="circle-dot" onclick="goToSlide(0)"></button>
+      <button class="circle-dot" onclick="goToSlide(1)"></button>
+      <button class="circle-dot" onclick="goToSlide(2)"></button>
+      <button class="circle-dot" onclick="goToSlide(3)"></button>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initBeerSliders() {
+    document.querySelectorAll('.beer-slider').forEach(el => {
+      if (!el.classList.contains('initialized')) {
+        new BeerSlider(el);
+        el.classList.add('initialized');
+      }
+    });
+  }
+
+  function goToSlide(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+    });
+    setTimeout(() => {
+      initBeerSliders();
+    }, 50);
+  }
+
+  window.addEventListener('DOMContentLoaded', initBeerSliders);
+</script>
+
+<style>
+  .beer-slider,
+  .beer-slider img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  .carousel-slide {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease;
+  }
+  .carousel-slide.active {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+  }
+  .circle-dot {
+    border: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #bbb;
+    margin: 0 4px;
+    cursor: pointer;
+  }
+  .circle-dot:hover {
+    background-color: #888;
+  }
+</style>
+
+
 
 
 <footer class="footer">
