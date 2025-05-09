@@ -415,16 +415,14 @@
           slide.classList.toggle('active', i === idx);
         });
 
-        // lazy load GLBs for this slide
         const indices = slideToGLBIndexes[idx];
         indices.forEach(i => {
-          if (!glbLoaded[i]) {
-            loadGLB('./pointclouds/' + glbFiles[i], 'canvas-ply' + i, 7, i);
-            glbLoaded[i] = true;
-          }
+          // 매번 다시 로드해주기 (렌더러가 사라졌을 수도 있어서)
+          const canvasContainer = document.getElementById('canvas-ply' + i);
+          canvasContainer.innerHTML = ""; // 💥 렌더러 삭제
+          loadGLB('./pointclouds/' + glbFiles[i], 'canvas-ply' + i, 7, i);
         });
       };
-
       goToPlySlide(0);
 
       // // 🗂 GLB 파일 목록과 호출
