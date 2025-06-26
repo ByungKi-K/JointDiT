@@ -384,6 +384,9 @@
         const zOffset  = initPos.z - target.z;     // 목표(target) 기준 Z 고정 거리
         const circleR  = 5;                        // X–Y 평면에서의 반지름 (조절)
 
+        // 2) XY 타원 반지름
+        const radiusX = 8;
+        const radiusY = 4;
         let angle = 0;
 
         // 모델 로드
@@ -400,15 +403,23 @@
             if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
           });
 
-          // 애니메이션 루프
           function animate() {
             requestAnimationFrame(animate);
-            angle += 0.02;  // 속도 조절
+            angle += 0.02;
 
-            // — target 을 중심으로 X–Y 평면에서 원운동
-            camera.position.x = target.x - 8 * Math.sin(angle);
-            camera.position.y = target.y + circleR * Math.cos(angle);
-            camera.position.z = target.z + zOffset;
+            // 3) XY 평면 타원 좌표
+            const dx =  radiusX * Math.sin(angle);
+            const dy =  radiusY * Math.cos(angle);
+
+            // 4) z 보정: r² = dx² + dy² + dz² → dz 계산
+            const horizontal2 = dx*dx + dy*dy;
+            const dz = Math.sqrt(Math.max(0, initDistance*initDistance - horizontal2));
+
+            // 5) 카메라 위치 업데이트
+            camera.position.x = target.x - dx;
+            camera.position.y = target.y + dy;
+            // initPos.z > target.z 였다면 dz 양수, 반대면 음수
+            camera.position.z = target.z + Math.sign(initArr[2] - tgtArr[2]) * dz;
 
             camera.lookAt(target);
             renderer.render(scene, camera);
