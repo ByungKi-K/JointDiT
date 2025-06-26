@@ -158,7 +158,7 @@
 
   <section class="section" style="background-color: #f6f6f6;">
     <div class="container is-max-desktop has-text-centered">
-      <h2 class="title is-2">Interactive Demo 1</h2>
+      <h2 class="title is-2">Interactive Demo 2</h2>
 
 
         <!-- ---------- PLY VIEWER SECTION (버튼-전환 캐러셀) ---------- -->
@@ -383,9 +383,10 @@
         scene.add(light);
 
         let angle = 0;
-        const radius = 13; // 카메라가 모델을 도는 반지름
-        const target = new THREE.Vector3(0, 0, 0); // 모델 중심
-
+        const radius = 13;
+        const xOffset = 0; // 정면에서 떨어진 거리
+        const center = new THREE.Vector3(0, 0, 0); // 모델 중심
+        
         new GLTFLoader().load(path, gltf => {
           const model = gltf.scene;
           model.rotation.x = Math.PI;
@@ -399,15 +400,19 @@
             if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
           });
 
-                  
+                            
+                
           function animate() {
             requestAnimationFrame(animate);
 
-            // 🌀 카메라 위치를 원형 궤도로 이동
-            angle += 0.01;  // 회전 속도
-            camera.position.x = radius * Math.cos(angle);
-            camera.position.z = radius * Math.sin(angle);
-            camera.lookAt(target);  // 항상 모델 중심을 바라봄
+            angle += 0.01;
+
+            // ✅ YZ 평면을 따라 회전 (X는 고정)
+            camera.position.x = xOffset;  // 사람 앞쪽에 고정
+            camera.position.y = radius * Math.sin(angle);  // 높이 변화 (위→아래)
+            camera.position.z = radius * Math.cos(angle);  // 거리 변화 (앞→뒤)
+
+            camera.lookAt(center);  // 항상 모델을 바라봄
 
             renderer.render(scene, camera);
           }
