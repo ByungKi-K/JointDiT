@@ -583,8 +583,8 @@
         // 1) Depth Estimation 결과 섹션 안의 모든 beer-slider 컨테이너를 찾고
         const sliders = Array.from(document.querySelectorAll('#slider-carousel .beer-slider'));
       
-        let t = 0;           // 0.0 ~ 1.0
-        let dir = 1;         // 증가(1) 또는 감소(-1)
+        let t = 1;           // 0.0 ~ 1.0
+        let dir = -1;         // 증가(1) 또는 감소(-1)
         const speed = 0.005; // 속도 조절
       
         function animateSlider() {
