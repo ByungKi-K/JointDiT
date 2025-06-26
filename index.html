@@ -370,6 +370,7 @@
         ];
         return positions[index] || { pos: [0, 2, 20], target: [0, 0, 0] };
       }
+
       function loadGLB(path, containerId, scale = 7, index = 0) {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
@@ -377,16 +378,16 @@
         renderer.setSize(290, 290);
         document.getElementById(containerId).appendChild(renderer.domElement);
 
-        // 빛 추가 (필요하면)
+        // 조명 (필요하면)
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(10, 10, 10);
         scene.add(light);
 
-        // 파라미터
-        let angle = 0;                         // 수평 회전
-        const radius = 13;                     // 카메라 반지름
-        const elevAmp = Math.PI / 6;          // 최대 기울기(30°)
-        const center = new THREE.Vector3(0,0,0);
+        // 궤도 파라미터
+        let angle = 0;                 // 애니메이션 인덱스
+        const circleRadius = 5;        // X–Y 평면에서의 원 반지름
+        const frontDistance = 13;      // Z 축(정면) 고정 거리
+        const center = new THREE.Vector3(0, 0, 0); // 모델 위치
 
         new GLTFLoader().load(path, gltf => {
           const model = gltf.scene;
@@ -403,17 +404,12 @@
           function animate() {
             requestAnimationFrame(animate);
 
-            angle += 0.01;
+            angle += 0.02;  // 속도 조절
 
-            // ▶ 수평 각도와 수직 각도 계산
-            const horiz = angle;                      // 0 → 2π (한 바퀴)
-            const elev  = elevAmp * Math.sin(angle);  // -30° ↔ +30° 반복
-
-            // ▶ 구면 좌표계로 변환
-            const rCos = radius * Math.cos(elev);
-            camera.position.x = rCos * Math.cos(horiz);
-            camera.position.z = rCos * Math.sin(horiz);
-            camera.position.y = radius * Math.sin(elev);
+            // 🔄 X–Y 평면 원운동, Z 고정
+            camera.position.x = -circleRadius * Math.sin(angle);
+            camera.position.y =  circleRadius * Math.cos(angle);
+            camera.position.z =  frontDistance;
 
             camera.lookAt(center);
             renderer.render(scene, camera);
@@ -422,6 +418,7 @@
           animate();
         });
       }
+      
       // function loadGLB(path, containerId, scale = 7, index = 0) {
 
       //   const scene = new THREE.Scene();
