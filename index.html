@@ -137,7 +137,7 @@
 </section>
 
 
-<!-- <section class="hero teaser">
+<section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="video-container" style="text-align: center;">
       <h2 class="title is-2" style="margin-bottom: 1rem;">JointDiT's Features</h2>
@@ -148,7 +148,7 @@
       </video>
     </div>
   </div>
-</section> -->
+</section>
 
 
 
@@ -158,13 +158,13 @@
 
   <section class="section" style="background-color: #f6f6f6;">
     <div class="container is-max-desktop has-text-centered">
-      <h2 class="title is-2">Interactive Demo 1</h2>
+      <h2 class="title is-2">Interactive Demo 2</h2>
 
 
         <!-- ---------- PLY VIEWER SECTION (버튼-전환 캐러셀) ---------- -->
       <section class="section" style="background-color:#f6f6f6;">
         <div class="container is-max-desktop has-text-centered">
-          <h3 class="title is-4 has-text-grey">Joint RGB-Depth Generation</h3>
+          <h3 class="title is-4 has-text-grey">Joint Generation Results (Viewable on PC)</h3>
 
           <div id="ply-carousel">
             <!-- ▸▸ Slide 0 (샘플 0–2) -->
@@ -339,19 +339,25 @@
       import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
       
       const glbFiles = [
-        '00.glb', '01.glb', '02.glb'
+        '00.glb', '01.glb', '02.glb',
+        '03.glb', '04.glb', '05.glb',
+        '06.glb', '07.glb', '08.glb',
+        '09.glb', '10.glb', '11.glb'
       ];
       const glbLoaded = new Array(glbFiles.length).fill(false);
       const slideToGLBIndexes = {
-        0: [0, 1, 2]
+        0: [0, 1, 2],
+        1: [3, 4, 5],
+        2: [6, 7, 8],
+        3: [9, 10, 11],
       };
 
 
       function getCameraSettingsByIndex(index) {
         const positions = [
-          { pos: [0, -3, 14], target: [0, 0, 0] },   // for 00.glb
-          { pos: [0, -3, 14], target: [0, 0, 0] },   // for 01.glb
-          { pos: [10, -8, 65], target: [10, -5, 0] },   // for 02.glb
+          { pos: [0, 0, 13], target: [0, 0, 0] },   // for 00.glb
+          { pos: [0, 0, 13], target: [0, 0, 0] },   // for 01.glb
+          { pos: [10, -5, 70], target: [10, -5, 0] },   // for 02.glb
           { pos: [0, 0, 10], target: [0, 0, 0] },
           { pos: [0, -3, 12], target: [0, -2, 0] },
           { pos: [0, -11, 25], target: [0, -7, 0] },
@@ -364,87 +370,97 @@
         ];
         return positions[index] || { pos: [0, 2, 20], target: [0, 0, 0] };
       }
-     
-      //— GLB 로드 + 카메라 애니메이션 (elliptical orbit with preserved φ₀)
-      function loadGLB(path, containerId, scale=7, idx=0) {
+
+      function loadGLB(path, containerId, scale = 7, index = 0) {
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(70,1,0.1,1000);
-        const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
-        renderer.setSize(290,290);
+        const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(290, 290);
         document.getElementById(containerId).appendChild(renderer.domElement);
 
-        // 조명 추가
-        const light = new THREE.DirectionalLight(0xffffff,1);
-        light.position.set(10,10,10);
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(10, 10, 10);
         scene.add(light);
 
-        // 초기 카메라/타겟, 거리, φ₀ 계산
-        const { pos: initArr, target: tgtArr } = getCameraSettingsByIndex(idx);
-        const initPos = new THREE.Vector3(...initArr);
-        const target  = new THREE.Vector3(...tgtArr);
-        const initDistance = initPos.distanceTo(target);
-        const phi0 = Math.atan2(initArr[1]-tgtArr[1], initArr[0]-tgtArr[0]);
-
-        // 궤도 “기본” 반지름
-        const baseRadiusX = 5;   // 좌우 긴축
-        const baseRadiusY = 10;    // 상하 짧은축
-
-        // 모델별 실제 반지름
-        let radiusX = baseRadiusX;
-        let radiusY = baseRadiusY;
-
-        // 3번째 모델(index===2)만 initDistance 비율로 확대
-        if (idx === 2) {
-          const scaleFactor = initDistance / 20;  // 20은 기준 거리, 필요하면 조절
-          radiusX *= scaleFactor;
-          radiusY *= scaleFactor;
-        }
-
-        // 궤도 반지름
+        // 초기 카메라 위치
+        let radius = 13;
         let angle = 0;
+        const target = new THREE.Vector3(0, 0, 0); // 중심
 
-        // GLB 로드
         new GLTFLoader().load(path, gltf => {
           const model = gltf.scene;
           model.rotation.x = Math.PI;
           model.scale.set(scale, scale, scale);
-          // 모델 중심 원점 정렬
+
           const box = new THREE.Box3().setFromObject(model);
           model.position.sub(box.getCenter(new THREE.Vector3()));
-          // vertex color 유지
-          model.traverse(c => {
-            if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors:true });
-          });
           scene.add(model);
 
-          // 애니메이션 루프
+          model.traverse(c => {
+            if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
+          });
+
           function animate() {
             requestAnimationFrame(animate);
-            angle += 0.02;
 
-            // 1) raw 타원 좌표
-            const rawX = radiusX * Math.sin(angle);
-            const rawY = radiusY * Math.cos(angle);
-            // 2) φ₀ 회전
-            const dx = rawX * Math.cos(phi0) - rawY * Math.sin(phi0);
-            const dy = rawX * Math.sin(phi0) + rawY * Math.cos(phi0);
-            // 3) Z 보정
-            const horiz2 = dx*dx + dy*dy;
-            const dz = Math.sqrt(Math.max(0, initDistance*initDistance - horiz2));
-            const signZ = Math.sign(initArr[2] - tgtArr[2]);
-
-            // 4) 카메라 위치 갱신
-            camera.position.set(
-              target.x + dx,
-              target.y + dy,
-              target.z + signZ * dz
-            );
+            // 각도를 계속 증가시켜서 원형 회전
+            angle += 0.01; // 회전 속도 조절
+            camera.position.x = radius * Math.cos(angle);
+            camera.position.z = radius * Math.sin(angle);
             camera.lookAt(target);
+
             renderer.render(scene, camera);
           }
+
           animate();
         });
       }
+      // function loadGLB(path, containerId, scale = 7, index = 0) {
+
+      //   const scene = new THREE.Scene();
+      //   const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
+
+      //   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      //   renderer.setSize(290, 290);
+      //   document.getElementById(containerId).appendChild(renderer.domElement);
+
+      //   const controls = new OrbitControls(camera, renderer.domElement);
+      //   controls.enableDamping = true;
+      //   controls.dampingFactor = 0.1;
+
+      //   controls.autoRotate = true;
+      //   controls.autoRotateSpeed = 1.0; 
+
+
+      //   // 📍 카메라 시점 설정
+      //   const { pos, target } = getCameraSettingsByIndex(index);
+      //   camera.position.set(...pos);
+      //   controls.target.set(...target);
+      //   controls.update();
+
+      //   new GLTFLoader().load(path, gltf => {
+      //     const model = gltf.scene;
+      //     model.rotation.x = Math.PI;
+      //     model.scale.set(scale, scale, scale);
+
+      //     const box = new THREE.Box3().setFromObject(model);
+      //     model.position.sub(box.getCenter(new THREE.Vector3()));
+
+      //     model.traverse(c => {
+      //       if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
+      //     });
+
+      //     scene.add(model);
+
+      //     function animate() {
+      //       requestAnimationFrame(animate);
+      //       controls.update();
+      //       renderer.render(scene, camera);
+      //     }
+
+      //     animate();
+      //   });
+      // }
 
       window.goToPlySlide = function(idx) {
         document.querySelectorAll('.ply-slide').forEach((slide, i) => {
@@ -474,8 +490,286 @@
       );
     </script>
 
+    <h3 class="title is-4 has-text-grey">Depth Estimation Results</h3>
+
+    <div id="slider-carousel">
+      <!-- Slide 1 -->
+      <div class="carousel-slide active columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample1_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample1_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample2_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample2_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample3_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample3_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample4_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample4_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample5_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample5_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample6_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample6_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample7_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample7_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample8_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample8_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample9_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample9_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample10_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample10_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample11_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample11_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample12_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample12_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons is-centered mt-4">
+      <button class="circle-dot" onclick="goToSlide(0)"></button>
+      <button class="circle-dot" onclick="goToSlide(1)"></button>
+      <button class="circle-dot" onclick="goToSlide(2)"></button>
+      <button class="circle-dot" onclick="goToSlide(3)"></button>
+    </div>
+    
+    <!-- Depth-Conditioned Generation Carousel -->
+    <h3 class="title is-4 has-text-grey mt-6">Depth-Conditioned Image Generation Results</h3>
+    <div id="cond-carousel">
+      <div class="carousel-slide-cond active columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A red flower with yellow centers ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond1_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond1_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A bird standing on a ledge</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond2_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond2_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A man in a suit is playing the piano</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond3_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond3_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A tent set up in a field with chairs ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond4_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond4_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">Bonsai tree in a pot on display at a show</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond5_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond5_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A police vehicle parked in front of a building</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond6_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond6_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A black cat sitting in a red and yellow ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond7_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond7_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A steak and mashed potatoes on ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond8_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond8_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">Three surgeons in an operating room</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond9_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond9_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">Two men in black shirts and red gloves ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond10_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond10_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A floating hut in the middle of a lakes</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond11_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond11_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">An old man with a beard and hatt</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond12_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond12_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A hamburger and french fries on a plate</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond13_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond13_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A gray fox sitting on the ground near a road</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond14_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond14_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A red fire hydrant in the woods</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond15_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond15_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="buttons is-centered mt-4">
+      <button class="circle-dot" onclick="goToCondSlide(0)"></button>
+      <button class="circle-dot" onclick="goToCondSlide(1)"></button>
+      <button class="circle-dot" onclick="goToCondSlide(2)"></button>
+      <button class="circle-dot" onclick="goToCondSlide(3)"></button>
+      <button class="circle-dot" onclick="goToCondSlide(4)"></button>
+    </div>
+  </div>
+</section>
+
 <script>
-  
   function initBeerSliders() {
     document.querySelectorAll('.beer-slider').forEach(el => {
       if (!el.classList.contains('initialized')) {
