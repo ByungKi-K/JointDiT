@@ -406,7 +406,7 @@
             angle += 0.02;  // 속도 조절
 
             // — target 을 중심으로 X–Y 평면에서 원운동
-            camera.position.x = target.x - circleR * Math.sin(angle);
+            camera.position.x = target.x - 8 * Math.sin(angle);
             camera.position.y = target.y + circleR * Math.cos(angle);
             camera.position.z = target.z + zOffset;
 
