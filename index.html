@@ -158,7 +158,7 @@
 
   <section class="section" style="background-color: #f6f6f6;">
     <div class="container is-max-desktop has-text-centered">
-      <h2 class="title is-2">Interactive Demo 2</h2>
+      <h2 class="title is-2">Interactive Demo 4</h2>
 
 
         <!-- ---------- PLY VIEWER SECTION (버튼-전환 캐러셀) ---------- -->
@@ -370,7 +370,6 @@
         ];
         return positions[index] || { pos: [0, 2, 20], target: [0, 0, 0] };
       }
-
       function loadGLB(path, containerId, scale = 7, index = 0) {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
@@ -378,20 +377,21 @@
         renderer.setSize(290, 290);
         document.getElementById(containerId).appendChild(renderer.domElement);
 
+        // 빛 추가 (필요하면)
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(10, 10, 10);
         scene.add(light);
 
-        let angle = 0;
-        const radius = 13;
-        const xOffset = 0; // 정면에서 떨어진 거리
-        const center = new THREE.Vector3(0, 0, 0); // 모델 중심
-        
+        // 파라미터
+        let angle = 0;                         // 수평 회전
+        const radius = 13;                     // 카메라 반지름
+        const elevAmp = Math.PI / 6;          // 최대 기울기(30°)
+        const center = new THREE.Vector3(0,0,0);
+
         new GLTFLoader().load(path, gltf => {
           const model = gltf.scene;
           model.rotation.x = Math.PI;
           model.scale.set(scale, scale, scale);
-
           const box = new THREE.Box3().setFromObject(model);
           model.position.sub(box.getCenter(new THREE.Vector3()));
           scene.add(model);
@@ -400,20 +400,22 @@
             if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
           });
 
-                            
-                
           function animate() {
             requestAnimationFrame(animate);
 
             angle += 0.01;
 
-            // ✅ YZ 평면을 따라 회전 (X는 고정)
-            camera.position.x = xOffset;  // 사람 앞쪽에 고정
-            camera.position.y = radius * Math.sin(angle);  // 높이 변화 (위→아래)
-            camera.position.z = radius * Math.cos(angle);  // 거리 변화 (앞→뒤)
+            // ▶ 수평 각도와 수직 각도 계산
+            const horiz = angle;                      // 0 → 2π (한 바퀴)
+            const elev  = elevAmp * Math.sin(angle);  // -30° ↔ +30° 반복
 
-            camera.lookAt(center);  // 항상 모델을 바라봄
+            // ▶ 구면 좌표계로 변환
+            const rCos = radius * Math.cos(elev);
+            camera.position.x = rCos * Math.cos(horiz);
+            camera.position.z = rCos * Math.sin(horiz);
+            camera.position.y = radius * Math.sin(elev);
 
+            camera.lookAt(center);
             renderer.render(scene, camera);
           }
 
