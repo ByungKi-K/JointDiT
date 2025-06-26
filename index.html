@@ -580,31 +580,40 @@
       
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-        // Depth Estimation Results 안의 beer-reveal만 선택
-        const reveals = document.querySelectorAll('#slider-carousel .beer-reveal');
-        let t = 0;        // 0.0 ~ 1.0 사이
-        let dir = 1;      // 증가 또는 감소 방향
-        const speed = 0.005; // 프레임당 변화량 (속도 조절)
-
+        // 1) Depth Estimation 결과 섹션 안의 모든 beer-slider 컨테이너를 찾고
+        const sliders = Array.from(document.querySelectorAll('#slider-carousel .beer-slider'));
+      
+        let t = 0;           // 0.0 ~ 1.0
+        let dir = 1;         // 증가(1) 또는 감소(-1)
+        const speed = 0.005; // 속도 조절
+      
         function animateSlider() {
-          // t 값 갱신
+          // 2) t 갱신
           t += speed * dir;
-          if (t >= 1) {
-            t = 1;
-            dir = -1;
-          } else if (t <= 0) {
-            t = 0;
-            dir = 1;
-          }
-
-          // 각 beer-reveal 요소에 width 적용
-          reveals.forEach(r => {
-            r.style.width = ${t * 100}%;
+          if (t >= 1) { t = 1; dir = -1; } 
+          else if (t <= 0) { t = 0; dir = 1; }
+      
+          // 3) 각 슬라이더의 reveal 과 handle 위치 업데이트
+          sliders.forEach(slider => {
+            const reveal = slider.querySelector('.beer-reveal');
+            const handle = slider.querySelector('.beer-handle');
+            const pct    = `${t * 100}%`;
+      
+            if (reveal) {
+              // width 를 !important 로 강제 적용
+              reveal.style.setProperty('width', pct, 'important');
+            }
+            if (handle) {
+              // 핸들 위치도 같은 퍼센트로 이동
+              handle.style.setProperty('left', pct, 'important');
+            }
           });
-
+      
+          // 4) 다음 프레임 예약
           requestAnimationFrame(animateSlider);
         }
-
+      
+        // 5) 애니메이션 시작
         animateSlider();
       });
     </script>
