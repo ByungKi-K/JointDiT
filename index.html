@@ -386,13 +386,13 @@
         const phi0 = Math.atan2(initArr[1]-tgtArr[1], initArr[0]-tgtArr[0]);
 
         // 궤도 “기본” 반지름
-        const baseRadiusX = 10;   // 좌우 긴축
-        const baseRadiusY = 3;    // 상하 짧은축
+        const baseRadiusX = 3;   // 좌우 긴축
+        const baseRadiusY = 10;    // 상하 짧은축
 
         // 모델별 실제 반지름
         let radiusX = baseRadiusX;
         let radiusY = baseRadiusY;
-        
+
         // 3번째 모델(index===2)만 initDistance 비율로 확대
         if (idx === 2) {
           const scaleFactor = initDistance / 20;  // 20은 기준 거리, 필요하면 조절
