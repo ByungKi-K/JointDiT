@@ -364,61 +364,70 @@
         ];
         return positions[index] || { pos: [0, 2, 20], target: [0, 0, 0] };
       }
-      function loadGLB(path, containerId, scale = 7, index = 0) {
-        const scene    = new THREE.Scene();
-        const camera   = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(290, 290);
+     
+      //— GLB 로드 + 카메라 애니메이션 (elliptical orbit with preserved φ₀)
+      function loadGLB(path, containerId, scale=7, idx=0) {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(70,1,0.1,1000);
+        const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+        renderer.setSize(290,290);
         document.getElementById(containerId).appendChild(renderer.domElement);
 
-        // 조명
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(10, 10, 10);
+        // 조명 추가
+        const light = new THREE.DirectionalLight(0xffffff,1);
+        light.position.set(10,10,10);
         scene.add(light);
 
-        const { pos: initPosArr, target: targetArr } = getCameraSettingsByIndex(index);
-        const initPos  = new THREE.Vector3(...initPosArr);
-        const target   = new THREE.Vector3(...targetArr);
+        // 초기 카메라/타겟, 거리, φ₀ 계산
+        const { pos: initArr, target: tgtArr } = getCameraSettingsByIndex(idx);
+        const initPos = new THREE.Vector3(...initArr);
+        const target  = new THREE.Vector3(...tgtArr);
         const initDistance = initPos.distanceTo(target);
+        const phi0 = Math.atan2(initArr[1]-tgtArr[1], initArr[0]-tgtArr[0]);
 
-        // **평면 회전 각도** (XY 평면에서 초기 벡터 방향)
-        const phi0 = Math.atan2(
-          initPosArr[1] - targetArr[1],   // dy0
-          initPosArr[0] - targetArr[0]    // dx0
-        );
-
+        // 궤도 반지름
         const radiusX = 8, radiusY = 4;
         let angle = 0;
 
+        // GLB 로드
         new GLTFLoader().load(path, gltf => {
-          // … 모델 로드 및 씬 추가 …
+          const model = gltf.scene;
+          model.rotation.x = Math.PI;
+          model.scale.set(scale, scale, scale);
+          // 모델 중심 원점 정렬
+          const box = new THREE.Box3().setFromObject(model);
+          model.position.sub(box.getCenter(new THREE.Vector3()));
+          // vertex color 유지
+          model.traverse(c => {
+            if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors:true });
+          });
+          scene.add(model);
 
+          // 애니메이션 루프
           function animate() {
             requestAnimationFrame(animate);
             angle += 0.02;
 
-            // 2) 원판상의 raw offset
-            const rawX =  radiusX * Math.sin(angle);
-            const rawY =  radiusY * Math.cos(angle);
-
-            // 3) phi0 만큼 회전
+            // 1) raw 타원 좌표
+            const rawX = radiusX * Math.sin(angle);
+            const rawY = radiusY * Math.cos(angle);
+            // 2) φ₀ 회전
             const dx = rawX * Math.cos(phi0) - rawY * Math.sin(phi0);
             const dy = rawX * Math.sin(phi0) + rawY * Math.cos(phi0);
+            // 3) Z 보정
+            const horiz2 = dx*dx + dy*dy;
+            const dz = Math.sqrt(Math.max(0, initDistance*initDistance - horiz2));
+            const signZ = Math.sign(initArr[2] - tgtArr[2]);
 
-            // 4) z 보정
-            const horizontal2 = dx*dx + dy*dy;
-            const dz = Math.sqrt(Math.max(0, initDistance*initDistance - horizontal2));
-            const signZ = Math.sign(initPosArr[2] - targetArr[2]);
-
-            // 5) 카메라 갱신
-            camera.position.x = target.x + dx;
-            camera.position.y = target.y + dy;
-            camera.position.z = target.z + signZ * dz;
-
+            // 4) 카메라 위치 갱신
+            camera.position.set(
+              target.x + dx,
+              target.y + dy,
+              target.z + signZ * dz
+            );
             camera.lookAt(target);
             renderer.render(scene, camera);
           }
-
           animate();
         });
       }
