@@ -376,35 +376,49 @@
         light.position.set(10, 10, 10);
         scene.add(light);
 
-        // 카메라 초기 위치 & 타겟 세팅
         const { pos: initPosArr, target: targetArr } = getCameraSettingsByIndex(index);
-        camera.position.set(...initPosArr);
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(...targetArr);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.1;
+        const initPos  = new THREE.Vector3(...initPosArr);
+        const target   = new THREE.Vector3(...targetArr);
+        const initDistance = initPos.distanceTo(target);
 
-        // ✅ 여기가 핵심: 자동 회전 켜기
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 1.0;  // 속도는 0.1~5 사이로 조절
+        // **평면 회전 각도** (XY 평면에서 초기 벡터 방향)
+        const phi0 = Math.atan2(
+          initPosArr[1] - targetArr[1],   // dy0
+          initPosArr[0] - targetArr[0]    // dx0
+        );
+
+        const radiusX = 8, radiusY = 4;
+        let angle = 0;
 
         new GLTFLoader().load(path, gltf => {
-          const model = gltf.scene;
-          model.rotation.x = Math.PI;
-          model.scale.set(scale, scale, scale);
-          const box = new THREE.Box3().setFromObject(model);
-          model.position.sub(box.getCenter(new THREE.Vector3()));
-          model.traverse(c => {
-            if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
-          });
-          scene.add(model);
+          // … 모델 로드 및 씬 추가 …
 
-          // 애니메이션 루프
           function animate() {
             requestAnimationFrame(animate);
-            controls.update();            // <-- autoRotate 동작
+            angle += 0.02;
+
+            // 2) 원판상의 raw offset
+            const rawX =  radiusX * Math.sin(angle);
+            const rawY =  radiusY * Math.cos(angle);
+
+            // 3) phi0 만큼 회전
+            const dx = rawX * Math.cos(phi0) - rawY * Math.sin(phi0);
+            const dy = rawX * Math.sin(phi0) + rawY * Math.cos(phi0);
+
+            // 4) z 보정
+            const horizontal2 = dx*dx + dy*dy;
+            const dz = Math.sqrt(Math.max(0, initDistance*initDistance - horizontal2));
+            const signZ = Math.sign(initPosArr[2] - targetArr[2]);
+
+            // 5) 카메라 갱신
+            camera.position.x = target.x + dx;
+            camera.position.y = target.y + dy;
+            camera.position.z = target.z + signZ * dz;
+
+            camera.lookAt(target);
             renderer.render(scene, camera);
           }
+
           animate();
         });
       }
