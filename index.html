@@ -158,7 +158,7 @@
 
   <section class="section" style="background-color: #f6f6f6;">
     <div class="container is-max-desktop has-text-centered">
-      <h2 class="title is-2">Interactive Demo 4</h2>
+      <h2 class="title is-2">Interactive Demo 1</h2>
 
 
         <!-- ---------- PLY VIEWER SECTION (버튼-전환 캐러셀) ---------- -->
@@ -372,53 +372,57 @@
       }
 
       function loadGLB(path, containerId, scale = 7, index = 0) {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
+        const scene    = new THREE.Scene();
+        const camera   = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(290, 290);
         document.getElementById(containerId).appendChild(renderer.domElement);
 
-        // 조명 (필요하면)
+        // 빛
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(10, 10, 10);
         scene.add(light);
 
-        // 궤도 파라미터
-        let angle = 0;                 // 애니메이션 인덱스
-        const circleRadius = 5;        // X–Y 평면에서의 원 반지름
-        const frontDistance = 13;      // Z 축(정면) 고정 거리
-        const center = new THREE.Vector3(0, 0, 0); // 모델 위치
+        // 인덱스별 초기값 불러오기
+        const { pos: initPosArr, target: targetArr } = getCameraSettingsByIndex(index);
+        const initPos  = new THREE.Vector3(...initPosArr);
+        const target   = new THREE.Vector3(...targetArr);
+        const zOffset  = initPos.z - target.z;     // 목표(target) 기준 Z 고정 거리
+        const circleR  = 5;                        // X–Y 평면에서의 반지름 (조절)
 
+        let angle = 0;
+
+        // 모델 로드
         new GLTFLoader().load(path, gltf => {
           const model = gltf.scene;
           model.rotation.x = Math.PI;
           model.scale.set(scale, scale, scale);
+
+          // 모델을 정확히 center 에 놓기
           const box = new THREE.Box3().setFromObject(model);
           model.position.sub(box.getCenter(new THREE.Vector3()));
           scene.add(model);
-
           model.traverse(c => {
             if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
           });
 
+          // 애니메이션 루프
           function animate() {
             requestAnimationFrame(animate);
-
             angle += 0.02;  // 속도 조절
 
-            // 🔄 X–Y 평면 원운동, Z 고정
-            camera.position.x = -circleRadius * Math.sin(angle);
-            camera.position.y =  circleRadius * Math.cos(angle);
-            camera.position.z =  frontDistance;
+            // — target 을 중심으로 X–Y 평면에서 원운동
+            camera.position.x = target.x - circleR * Math.sin(angle);
+            camera.position.y = target.y + circleR * Math.cos(angle);
+            camera.position.z = target.z + zOffset;
 
-            camera.lookAt(center);
+            camera.lookAt(target);
             renderer.render(scene, camera);
           }
 
           animate();
         });
       }
-      
       // function loadGLB(path, containerId, scale = 7, index = 0) {
 
       //   const scene = new THREE.Scene();
