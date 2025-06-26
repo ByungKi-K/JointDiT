@@ -379,17 +379,17 @@
 
         // 인덱스별 초기값 불러오기
         const { pos: initPosArr, target: targetArr } = getCameraSettingsByIndex(index);
-        const initPos  = new THREE.Vector3(...initPosArr);
-        const target   = new THREE.Vector3(...targetArr);
-        const zOffset  = initPos.z - target.z;     // 목표(target) 기준 Z 고정 거리
-        const circleR  = 5;                        // X–Y 평면에서의 반지름 (조절)
+        const initPos    = new THREE.Vector3(...initPosArr);
+        const target     = new THREE.Vector3(...targetArr);
+        // 1) 초기 카메라↔타겟 거리(r) 계산
+        const initDistance = initPos.distanceTo(target);
 
         // 2) XY 타원 반지름
         const radiusX = 8;
         const radiusY = 4;
+
         let angle = 0;
 
-        // 모델 로드
         new GLTFLoader().load(path, gltf => {
           const model = gltf.scene;
           model.rotation.x = Math.PI;
@@ -399,6 +399,7 @@
           const box = new THREE.Box3().setFromObject(model);
           model.position.sub(box.getCenter(new THREE.Vector3()));
           scene.add(model);
+
           model.traverse(c => {
             if (c.isMesh) c.material = new THREE.MeshBasicMaterial({ vertexColors: true });
           });
@@ -419,7 +420,7 @@
             camera.position.x = target.x - dx;
             camera.position.y = target.y + dy;
             // initPos.z > target.z 였다면 dz 양수, 반대면 음수
-            camera.position.z = target.z + Math.sign(initArr[2] - tgtArr[2]) * dz;
+            camera.position.z = target.z + Math.sign(initPosArr[2] - targetArr[2]) * dz;
 
             camera.lookAt(target);
             renderer.render(scene, camera);
