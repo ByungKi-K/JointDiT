@@ -97,7 +97,7 @@
     </div>
   </div>
 </section>
-<!-- 
+
 
 <section class="hero teaser">
   <div class="container is-max-desktop">
@@ -112,7 +112,7 @@
       </p>
     </div>
   </div>
-</section> -->
+</section>
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -458,6 +458,310 @@
       );
     </script>
 
+    <h3 class="title is-4 has-text-grey">Depth Estimation Results</h3>
+
+    <div id="slider-carousel">
+      <!-- Slide 1 -->
+      <div class="carousel-slide active columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample1_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample1_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample2_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample2_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample3_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample3_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample4_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample4_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample5_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample5_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample6_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample6_rgb.jpg" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample7_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample7_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample8_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample8_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample9_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample9_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="carousel-slide columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample10_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample10_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample11_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample11_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="beer-slider" data-beer-label="Depth">
+            <img src="./samples/sample12_depth.png" alt="RGB">
+            <div class="beer-reveal">
+              <img src="./samples/sample12_rgb.png" alt="Depth">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons is-centered mt-4">
+      <button class="circle-dot" onclick="goToSlide(0)"></button>
+      <button class="circle-dot" onclick="goToSlide(1)"></button>
+      <button class="circle-dot" onclick="goToSlide(2)"></button>
+      <button class="circle-dot" onclick="goToSlide(3)"></button>
+    </div>
+    
+    <!-- Depth-Conditioned Generation Carousel -->
+    <h3 class="title is-4 has-text-grey mt-6">Depth-Conditioned Image Generation Results</h3>
+    <div id="cond-carousel">
+      <div class="carousel-slide-cond active columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A red flower with yellow centers ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond1_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond1_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A bird standing on a ledge</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond2_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond2_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A man in a suit is playing the piano</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond3_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond3_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A tent set up in a field with chairs ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond4_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond4_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">Bonsai tree in a pot on display at a show</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond5_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond5_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A police vehicle parked in front of a building</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond6_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond6_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A black cat sitting in a red and yellow ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond7_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond7_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A steak and mashed potatoes on ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond8_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond8_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">Three surgeons in an operating room</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond9_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond9_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">Two men in black shirts and red gloves ...</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond10_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond10_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A floating hut in the middle of a lakes</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond11_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond11_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">An old man with a beard and hatt</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond12_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond12_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-slide-cond columns is-multiline is-centered">
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A hamburger and french fries on a plate</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond13_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond13_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A gray fox sitting on the ground near a road</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond14_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond14_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <p class="has-text-weight-semibold mb-2">A red fire hydrant in the woods</p>
+          <div class="beer-slider" data-beer-label="Generated image">
+            <img src="./samples/cond15_rgb.jpg" alt="Depth">
+            <div class="beer-reveal">
+              <img src="./samples/cond15_depth.png" alt="Generated RGB">
+            </div>
+          </div>
+        </div>
+  
+<script>
+  function initBeerSliders() {
+    document.querySelectorAll('.beer-slider').forEach(el => {
+      if (!el.classList.contains('initialized')) {
+        new BeerSlider(el);
+        el.classList.add('initialized');
+      }
+    });
+  }
+
+  function goToSlide(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+    });
+    setTimeout(() => {
+      initBeerSliders();
+    }, 50);
+  }
+
+  function goToCondSlide(index) {
+    const slides = document.querySelectorAll('.carousel-slide-cond');
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+    });
+    setTimeout(() => {
+      initBeerSliders();
+    }, 50);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initBeerSliders();
+    goToSlide(0);        // Ensure first main slide is visible
+    goToCondSlide(0);    // Ensure first conditional slide is visible
+  });
+</script>
 
 <style>
   .beer-slider,
